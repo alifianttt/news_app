@@ -5,11 +5,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.WebChromeClient
+import com.submission.gameapp.R
 import com.submission.gameapp.databinding.ActivityDetailNewsBinding
+import com.submission.newsapp.ext.ConnectionLiveData
+import com.submission.newsapp.ext.setVisible
 
 class DetailNews : AppCompatActivity() {
     private val binding: ActivityDetailNewsBinding by lazy {
         ActivityDetailNewsBinding.inflate(layoutInflater)
+    }
+
+    private val conneectionStatus: ConnectionLiveData by lazy {
+        ConnectionLiveData(this)
     }
     companion object{
         const val URL_KEY = "url"
@@ -26,6 +33,14 @@ class DetailNews : AppCompatActivity() {
 
     private fun initView(){
         urlNews = intent.getStringExtra(URL_KEY) ?: ""
+        conneectionStatus.observe(this){ isConnect ->
+            if (!isConnect){
+                binding.layoutNetwork.apply {
+                    root.setVisible(true)
+                    txtError.text = getString(R.string.error_network)
+                }
+            }
+        }
         binding.webArticle.settings.javaScriptEnabled = true
         binding.webArticle.webChromeClient = WebChromeClient()
         binding.webArticle.loadUrl(urlNews)

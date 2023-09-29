@@ -2,21 +2,21 @@ package com.submission.newsapp.ui.home
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.submission.gameapp.R
+import com.submission.gameapp.databinding.ActivityListArticlesBinding
 import com.submission.newsapp.adapter.ArticlesAdapter
 import com.submission.newsapp.data.source.remote.network.Status
-import com.submission.gameapp.databinding.ActivityListArticlesBinding
 import com.submission.newsapp.ext.ConnectionLiveData
 import com.submission.newsapp.ext.setVisible
-import com.submission.newsapp.ext.toasShort
 import com.submission.newsapp.model.Article
 import com.submission.newsapp.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
@@ -66,7 +66,12 @@ class ListArticles : AppCompatActivity() {
             newsViewModel.fetchArticlesWithPaging("", idSource)
         }
         conneectionStatus.observe(this){ isConnect ->
-            binding.layoutNetwork.root.setVisible(!isConnect)
+            if (!isConnect){
+                binding.layoutNetwork.apply {
+                    root.setVisible(true)
+                    txtError.text = getString(R.string.error_network)
+                }
+            }
         }
 
         binding.layoutNetwork.imgClose.setOnClickListener {

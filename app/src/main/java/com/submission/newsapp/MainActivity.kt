@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.submission.gameapp.R
 import com.submission.newsapp.adapter.NewsAdapter
 import com.submission.newsapp.data.source.remote.network.Status
 import com.submission.gameapp.databinding.ActivityMainBinding
@@ -47,7 +48,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.swrList.isEnabled = false
         conneectionStatus.observe(this){ isConnect ->
-            binding.layoutNetwork.root.setVisible(!isConnect)
+            if (!isConnect){
+                binding.layoutNetwork.apply {
+                    root.setVisible(true)
+                    txtError.text = getString(R.string.error_network)
+                }
+            }
         }
 
         binding.layoutNetwork.imgClose.setOnClickListener {

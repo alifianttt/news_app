@@ -10,6 +10,7 @@ import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.submission.gameapp.R
 import com.submission.newsapp.adapter.SourceAdapter
 import com.submission.newsapp.data.source.remote.network.Status
 import com.submission.gameapp.databinding.ActivityNewsBinding
@@ -59,7 +60,12 @@ class SourceActivity : AppCompatActivity() {
         }
         binding.swrList.isEnabled = false
         conneectionStatus.observe(this){ isConnect ->
-            binding.layoutNetwork.root.setVisible(!isConnect)
+            if (!isConnect){
+                binding.layoutNetwork.apply {
+                    root.setVisible(true)
+                    txtError.text = getString(R.string.error_network)
+                }
+            }
         }
 
         binding.layoutNetwork.imgClose.setOnClickListener {
@@ -102,7 +108,6 @@ class SourceActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                ///newsViewModel.fetchListSource(category, s.toString())
                 sourceAdapter.filteredData(s.toString())
             }
 
