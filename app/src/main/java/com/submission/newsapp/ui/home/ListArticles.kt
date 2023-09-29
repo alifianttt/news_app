@@ -81,6 +81,10 @@ class ListArticles : AppCompatActivity() {
                 Status.LOADING -> binding.swrList.isRefreshing = true
                 Status.ERROR -> {
                     binding.swrList.isRefreshing = false
+                    binding.layoutNetwork.apply {
+                        root.setVisible(true)
+                        txtError.text = it.message
+                    }
                 }
                 Status.SUCCES -> {
                     binding.swrList.isRefreshing = false

@@ -65,10 +65,17 @@ class SourceActivity : AppCompatActivity() {
         binding.layoutNetwork.imgClose.setOnClickListener {
             binding.layoutNetwork.root.setVisible(false)
         }
+
         newsViewModel.getListSource().observe(this){
             when(it.status){
                 Status.LOADING -> binding.swrList.isRefreshing =  true
-                Status.ERROR -> binding.swrList.isRefreshing = false
+                Status.ERROR -> {
+                    binding.swrList.isRefreshing = false
+                    binding.layoutNetwork.apply {
+                        root.setVisible(true)
+                        txtError.text = it.message
+                    }
+                }
                 Status.SUCCES -> {
                     it.data?.let { base ->
                         if (base.sources.isEmpty()){
