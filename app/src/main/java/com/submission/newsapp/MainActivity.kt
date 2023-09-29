@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var listNews : ArrayList<Source> = ArrayList()
+    private var isEmpty = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -42,16 +43,18 @@ class MainActivity : AppCompatActivity() {
 
     }
     private fun initView(){
-        lifecycleScope.launch {
-            newsViewModel.fetchNewsSource()
-        }
-
         binding.swrList.isEnabled = false
         conneectionStatus.observe(this){ isConnect ->
+            binding.layoutNetwork.root.setVisible(!isConnect)
             if (!isConnect){
                 binding.layoutNetwork.apply {
-                    root.setVisible(true)
                     txtError.text = getString(R.string.error_network)
+                }
+            }
+
+            if (isConnect && isEmpty){
+                lifecycleScope.launch {
+                    newsViewModel.fetchNewsSource()
                 }
             }
         }
@@ -73,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                     binding.swrList.isRefreshing = false
                     listNews.clear()
                     it.data?.let { listSource -> listNews.addAll(listSource.sources.distinctBy { dist -> dist.category }) }
+                    isEmpty = listNews.isEmpty()
                     binding.rvNews.apply {
                         layoutManager = LinearLayoutManager(this@MainActivity)
                         adapter = NewsAdapter(listNews, listener)

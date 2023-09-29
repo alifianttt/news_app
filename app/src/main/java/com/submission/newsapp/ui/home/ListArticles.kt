@@ -66,9 +66,9 @@ class ListArticles : AppCompatActivity() {
             newsViewModel.fetchArticlesWithPaging("", idSource)
         }
         conneectionStatus.observe(this){ isConnect ->
+            binding.layoutNetwork.root.setVisible(!isConnect)
             if (!isConnect){
                 binding.layoutNetwork.apply {
-                    root.setVisible(true)
                     txtError.text = getString(R.string.error_network)
                 }
             }

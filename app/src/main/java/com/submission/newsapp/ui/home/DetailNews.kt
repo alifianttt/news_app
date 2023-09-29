@@ -34,9 +34,9 @@ class DetailNews : AppCompatActivity() {
     private fun initView(){
         urlNews = intent.getStringExtra(URL_KEY) ?: ""
         conneectionStatus.observe(this){ isConnect ->
+            binding.layoutNetwork.root.setVisible(!isConnect)
             if (!isConnect){
                 binding.layoutNetwork.apply {
-                    root.setVisible(true)
                     txtError.text = getString(R.string.error_network)
                 }
             }

@@ -40,6 +40,7 @@ class SourceActivity : AppCompatActivity() {
     }
     private var category = ""
     private lateinit var sourceAdapter: SourceAdapter
+    private var isEmpty = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -55,15 +56,17 @@ class SourceActivity : AppCompatActivity() {
     private fun initView(){
         category = intent.getStringExtra(CATEGORY_KEY) ?: ""
         sourceAdapter = SourceAdapter( listener)
-        lifecycleScope.launch {
-            newsViewModel.fetchListSource(category)
-        }
         binding.swrList.isEnabled = false
         conneectionStatus.observe(this){ isConnect ->
+            binding.layoutNetwork.root.setVisible(!isConnect)
             if (!isConnect){
                 binding.layoutNetwork.apply {
-                    root.setVisible(true)
                     txtError.text = getString(R.string.error_network)
+                }
+            }
+            if (isConnect && isEmpty){
+                lifecycleScope.launch {
+                    newsViewModel.fetchListSource(category)
                 }
             }
         }
@@ -84,13 +87,17 @@ class SourceActivity : AppCompatActivity() {
                 }
                 Status.SUCCES -> {
                     it.data?.let { base ->
+                        isEmpty = base.sources.isEmpty()
                         if (base.sources.isEmpty()){
                             binding.notFound.root.visibility = View.VISIBLE
                             binding.rvNews.visibility = View.GONE
                         } else {
+                            val list = mutableListOf<Source>()
                             binding.notFound.root.visibility = View.GONE
                             binding.rvNews.visibility = View.VISIBLE
-                            sourceAdapter.setData(base.sources)
+                            list.clear()
+                            list.addAll(base.sources)
+                            sourceAdapter.setData(list)
                         }
                     }
                     binding.swrList.isRefreshing = false
